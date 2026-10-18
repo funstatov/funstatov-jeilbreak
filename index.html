@@ -278,7 +278,7 @@ function toast(msg){
 }
 function glitch(txt){ return `<h1 class="glitch" data-text="${txt.replace(/"/g,'&quot;')}">${txt}</h1>`; }
 
-let offerState = { yt:false, dc:false };
+let offerState = { yt:false, dc:false, like:false };
 
 
 function stageCaptcha(){
@@ -374,7 +374,7 @@ function stagePlan(){
         <span class="chev">›</span>
       </button>
     </div>`;
-  card.querySelector('#goFree').onclick = ()=>{ offerState={yt:false,dc:false}; stageAds(); };
+  card.querySelector('#goFree').onclick = ()=>{ offerState={yt:false,dc:false,like:false}; stageAds(); };
 }
 
 
@@ -414,6 +414,11 @@ function stageAds(){
       <div class="otxt"><b>Join Discord Server</b><span>Visit for at least 5 seconds, then return</span></div>
       <span class="ogo" id="dcGo">Join</span>
     </div>
+    <div class="offer" id="likeOffer">
+      <div class="oicon">${YT_SVG}</div>
+      <div class="otxt"><b>Like the video</b><span>Visit for at least 5 seconds, then return</span></div>
+      <span class="ogo" id="likeGo">Like</span>
+    </div>
     <div class="ad-slot" id="adSlot">
       <div class="as-text">[ here could be your ad ]</div>
       <div class="as-sub">inactive ad space</div>
@@ -422,12 +427,12 @@ function stageAds(){
 
   const pct=card.querySelector('#pct'), bar=card.querySelector('#barFill'), steps=card.querySelector('#steps');
   const render=()=>{
-    const done=(offerState.yt?1:0)+(offerState.dc?1:0);
+    const done=(offerState.yt?1:0)+(offerState.dc?1:0)+(offerState.like?1:0);
     steps.innerHTML=stepRow(done);
-    const p=Math.round(done/2*100);
+    const p=Math.round(done/3*100);
     pct.textContent=p+'%';
     bar.style.width=p+'%';
-    if(done>=2){ setTimeout(stageKey, 600); }
+    if(done>=3){ setTimeout(stageKey, 600); }
   };
   render();
 
@@ -436,7 +441,7 @@ function stageAds(){
   let expiry=null;
   function clearPending(){
     if(pending){
-      card.querySelector('#'+pending+'Go').textContent=pending==='yt'?'Subscribe':'Join';
+      card.querySelector('#'+pending+'Go').textContent=({yt:'Subscribe',dc:'Join',like:'Like'})[pending];
     }
     pending=null;hiddenAt=null;clearTimeout(expiry);
   }
@@ -458,7 +463,7 @@ function stageAds(){
     card.querySelector('#'+id+'Offer').classList.add('done');
     card.querySelector('#'+id+'Go').textContent='Completed ✓';
     render();
-    if(offerState.yt && offerState.dc){
+    if(offerState.yt && offerState.dc && offerState.like){
       document.removeEventListener('visibilitychange',visibilityChanged);
     }
   }
@@ -478,6 +483,7 @@ function stageAds(){
   }
   card.querySelector('#ytOffer').addEventListener('click',()=>visit('yt',YT_LINK));
   card.querySelector('#dcOffer').addEventListener('click',()=>visit('dc',DISCORD_LINK));
+  card.querySelector('#likeOffer').addEventListener('click',()=>visit('like','https://youtu.be/rdl118eiA-4?si=UuX3inVG2NRlIfys'));
 }
 
 
