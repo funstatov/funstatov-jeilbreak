@@ -95,7 +95,7 @@
   .panel + .panel{margin-top:14px;}
   .panel::after{content:""; position:absolute; top:-1px; left:14px; width:34px; height:2px; background:var(--neon); box-shadow:0 0 8px var(--neon);}
 
-  .btn{all:unset; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  .btn{all:unset;box-sizing:border-box; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px;
     width:100%; padding:13px 14px; font-family:var(--f-hud); font-weight:700; font-size:13px; letter-spacing:1.5px;
     text-transform:uppercase; text-align:center; transition:.18s;
     clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));}
@@ -104,7 +104,7 @@
   .btn-green{background:linear-gradient(135deg,var(--neon-2),var(--cyan)); color:#02140a; filter:drop-shadow(0 0 7px rgba(0,229,255,.5));}
   .btn-green:hover{filter:drop-shadow(0 0 16px rgba(0,229,255,.85)) brightness(1.08); transform:translateY(-1px);}
 
-  /* ===== КАПЧА ===== */
+  
   .cap-widget{display:flex; align-items:center; gap:14px; padding:16px; background:rgba(2,14,7,.6);
     border:1px solid var(--neon-dim);}
   .cap-box{width:30px; height:30px; border:2px solid var(--neon-soft); background:#020a05; flex:0 0 auto;
@@ -126,7 +126,7 @@
   .cap-note{margin-top:10px; font-family:var(--f-mono); font-size:11px; letter-spacing:1px; color:var(--neon-soft);
     text-align:center; min-height:16px;}
 
-  /* ===== ПЛАН ===== */
+  
   .opts{display:grid; gap:14px;}
   .opt{display:flex; gap:14px; align-items:center; padding:18px 16px; cursor:pointer; text-align:left;
     border:1px solid var(--neon-dim); background:rgba(2,14,7,.55); transition:.2s; position:relative;
@@ -141,7 +141,7 @@
   .opt-tag{position:absolute; top:10px; right:14px; font-family:var(--f-mono); font-size:9px; letter-spacing:2px;
     color:#02140a; background:var(--neon); padding:2px 8px; clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);}
 
-  /* ===== ПРОГРЕСС + ШАГИ ===== */
+  
   .prog-head{display:flex; justify-content:space-between; align-items:center; font-family:var(--f-mono);
     font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--neon-soft); margin-bottom:9px;}
   .prog-pct{color:#02140a; background:var(--neon); padding:2px 9px; font-weight:700; letter-spacing:0;
@@ -165,7 +165,7 @@
   @keyframes pulse{0%,100%{box-shadow:0 0 0 1px var(--neon),0 0 8px rgba(0,255,65,.3)}50%{box-shadow:0 0 0 1px var(--neon),0 0 20px rgba(0,255,65,.7)}}
   .arrow{color:var(--neon); font-size:13px; text-shadow:0 0 8px var(--neon);}
 
-  /* ===== ОФФЕРЫ ===== */
+  
   .offer{display:flex; align-items:center; gap:14px; padding:14px; margin-top:14px; cursor:pointer;
     background:linear-gradient(135deg, rgba(255,0,51,.14), rgba(0,255,65,.06));
     border:1px solid var(--neon-dim); transition:.2s;
@@ -186,7 +186,7 @@
   .offer.done:hover{transform:none; box-shadow:none;}
   .offer.done .ogo{background:transparent; color:var(--neon); box-shadow:inset 0 0 0 1px var(--neon); pointer-events:none;}
 
-  /* ===== СЕРАЯ НЕКЛИКАБЕЛЬНАЯ СТРОКА ===== */
+  
   .ad-slot{margin-top:14px; padding:20px 14px; text-align:center; position:relative;
     border:1px dashed rgba(130,140,150,.32);
     background:repeating-linear-gradient(45deg, rgba(130,140,150,.05) 0 10px, transparent 10px 20px);
@@ -201,7 +201,7 @@
     clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);}
   .note b{color:#eafff0}
 
-  /* ===== КЛЮЧ (финал) ===== */
+  
   .key-stage{display:flex; flex-direction:column; align-items:center; gap:18px; padding:6px 0 4px;}
   .big-key{
     font-family:var(--f-mono); font-weight:700;
@@ -217,7 +217,7 @@
   @keyframes keyGlow{0%,100%{text-shadow:0 0 12px rgba(0,255,65,.7),0 0 28px rgba(0,255,65,.35)}
     50%{text-shadow:0 0 20px rgba(0,255,65,1),0 0 46px rgba(0,255,65,.6)}}
 
-  /* ===== ФУТЕР + ТОСТ ===== */
+  
   .footer{position:fixed; bottom:16px; left:0; right:0; z-index:30; text-align:center;
     font-family:var(--f-mono); font-size:12.5px; letter-spacing:.5px;}
   .footer .fl-label{color:var(--neon-soft);}
@@ -234,6 +234,7 @@
   @media (max-width:480px){ .card{padding:24px 16px} .glitch{font-size:18px} .bg-floor{height:48vh}
     .offer{flex-wrap:wrap} .offer .otxt{flex-basis:100%; order:3;} .offer .ogo{order:4; width:100%; margin-top:4px;} }
   @media (prefers-reduced-motion:reduce){ *{animation:none!important} }
+.btn:focus-visible,.opt:focus-visible{outline:2px solid var(--cyan);outline-offset:4px}
 </style>
 </head>
 <body>
@@ -255,10 +256,12 @@
   <div class="toast" id="toast"></div>
 
 <script>
-/* ============================ КОНФИГ ============================ */
+
 const YT_LINK      = 'https://www.youtube.com/@funstatov';
 const DISCORD_LINK = 'https://discord.com/invite/admHaUyA3c?utm_source=disboard&utm_medium=external_directory&utm_campaign=organic_discovery';
-const ACCESS_KEY   = 'a7Qm2Zr9Kx4Vn6Tp';
+const payload = [40, 109, 58, 17, 191, 196, 221, 249, 154, 154, 199, 82, 123, 16, 99, 56];
+const readAccess = () => payload.map((n,i)=>String.fromCharCode(n ^ ((73+i*17)%256))).join('');
+const SCRIPT_LINE = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/funstatov/funstatov-jeilbreak-000/refs/heads/main/jeilbreak.lua"))()';
 
 const YT_SVG = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.5v-7l6.3 3.5z"/></svg>';
 const DISCORD_SVG = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M20.317 4.369a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>';
@@ -274,7 +277,7 @@ function glitch(txt){ return `<h1 class="glitch" data-text="${txt.replace(/"/g,'
 
 let offerState = { yt:false, dc:false };
 
-/* ============================ СТАДИЯ 1 — КАПЧА ============================ */
+
 function stageCaptcha(){
   card.innerHTML = `
     <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
@@ -310,7 +313,7 @@ function stageCaptcha(){
   });
 }
 
-/* ============================ СТАДИЯ 2 — БЕСПЛАТНО ============================ */
+
 function stagePlan(){
   card.innerHTML = `
     <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
@@ -331,7 +334,7 @@ function stagePlan(){
   card.querySelector('#goFree').onclick = ()=>{ offerState={yt:false,dc:false}; stageAds(); };
 }
 
-/* ============================ СТАДИЯ 3 — РЕКЛАМА / ПОДПИСКИ ============================ */
+
 function stepRow(done){
   const items=[['View','◉'],['Complete','✓'],['Done','✔']];
   return items.map((it,i)=>{
@@ -346,8 +349,8 @@ function stageAds(){
     <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
     <div class="brand">
       <div class="avatar">F</div>
-      <div class="kicker">3 / 4 · Ads</div>
-      ${glitch('Watch To Unlock')}
+      <div class="kicker">3 / 4 · Links</div>
+      ${glitch('Visit To Unlock')}
     </div>
     <div class="panel">
       <div class="prog-head"><span>Verification</span><span class="prog-pct" id="pct">0%</span></div>
@@ -360,19 +363,19 @@ function stageAds(){
     </div>
     <div class="offer" id="ytOffer">
       <div class="oicon">${YT_SVG}</div>
-      <div class="otxt"><b>Subscribe on YouTube</b><span>Mandatory — join the channel</span></div>
+      <div class="otxt"><b>Subscribe on YouTube</b><span>Visit for at least 5 seconds, then return</span></div>
       <span class="ogo" id="ytGo">Subscribe</span>
     </div>
     <div class="offer dc" id="dcOffer">
       <div class="oicon">${DISCORD_SVG}</div>
-      <div class="otxt"><b>Join Discord Server</b><span>Mandatory — enter the server</span></div>
+      <div class="otxt"><b>Join Discord Server</b><span>Visit for at least 5 seconds, then return</span></div>
       <span class="ogo" id="dcGo">Join</span>
     </div>
     <div class="ad-slot" id="adSlot">
       <div class="as-text">[ here could be your ad ]</div>
       <div class="as-sub">inactive ad space</div>
     </div>
-    <div class="note"><span class="q">!</span><span><b>Don't see the ad?</b> Turn off Ad-Block or VPN</span></div>`;
+    <div class="note"><span class="q">!</span><span>Open each link, switch to its tab for 5 seconds, then return here.</span></div>`;
 
   const pct=card.querySelector('#pct'), bar=card.querySelector('#barFill'), steps=card.querySelector('#steps');
   const render=()=>{
@@ -385,46 +388,95 @@ function stageAds(){
   };
   render();
 
-  card.querySelector('#ytOffer').addEventListener('click', ()=>{
-    if(offerState.yt) return;
-    offerState.yt=true;
-    card.querySelector('#ytOffer').classList.add('done');
-    card.querySelector('#ytGo').textContent='Subscribed ✓';
-    window.open(YT_LINK,'_blank','noopener');
+  let pending=null;
+  let hiddenAt=null;
+  let expiry=null;
+  function clearPending(){
+    if(pending){
+      card.querySelector('#'+pending+'Go').textContent=pending==='yt'?'Subscribe':'Join';
+    }
+    pending=null;hiddenAt=null;clearTimeout(expiry);
+  }
+  function visibilityChanged(){
+    if(!pending) return;
+    if(document.hidden){
+      hiddenAt=performance.now();
+      return;
+    }
+    if(hiddenAt===null) return;
+    const elapsed=performance.now()-hiddenAt;
+    const id=pending;
+    clearPending();
+    if(elapsed<5000){
+      toast('Too short. Open the link again and wait 5 seconds.');
+      return;
+    }
+    offerState[id]=true;
+    card.querySelector('#'+id+'Offer').classList.add('done');
+    card.querySelector('#'+id+'Go').textContent='Completed ✓';
     render();
-  });
-  card.querySelector('#dcOffer').addEventListener('click', ()=>{
-    if(offerState.dc) return;
-    offerState.dc=true;
-    card.querySelector('#dcOffer').classList.add('done');
-    card.querySelector('#dcGo').textContent='Joined ✓';
-    window.open(DISCORD_LINK,'_blank','noopener');
-    render();
-  });
+    if(offerState.yt && offerState.dc){
+      document.removeEventListener('visibilitychange',visibilityChanged);
+    }
+  }
+  document.addEventListener('visibilitychange',visibilityChanged);
+  function visit(id,url){
+    if(offerState[id]) return;
+    if(pending){toast('Finish the current link first.');return;}
+    pending=id;hiddenAt=null;
+    card.querySelector('#'+id+'Go').textContent='Waiting…';
+    window.open(url,'_blank','noopener,noreferrer');
+    toast('Switch to the opened tab for 5 seconds, then return.');
+    expiry=setTimeout(()=>{
+      if(pending && hiddenAt===null){
+        clearPending();toast('No tab switch detected. Allow pop-ups and try again.');
+      }
+    },15000);
+  }
+  card.querySelector('#ytOffer').addEventListener('click',()=>visit('yt',YT_LINK));
+  card.querySelector('#dcOffer').addEventListener('click',()=>visit('dc',DISCORD_LINK));
 }
 
-/* ============================ СТАДИЯ 4 — КЛЮЧ ============================ */
+
+async function copyValue(value,button){
+  const original=button.textContent;
+  let copied=false;
+  try{
+    await navigator.clipboard.writeText(value);
+    copied=true;
+  }catch{
+    const ta=document.createElement('textarea');
+    ta.value=value;ta.readOnly=true;
+    ta.style.cssText='position:fixed;left:-9999px;top:0';
+    document.body.appendChild(ta);ta.select();
+    try{copied=document.execCommand('copy');}catch{}
+    ta.remove();
+  }
+  if(!copied){toast('Copy failed. Check your browser permissions.');return;}
+  button.textContent='Link copied!';
+  toast('Link copied!');
+  setTimeout(()=>{button.textContent=original;},2200);
+}
 function stageKey(){
   card.innerHTML = `
     <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
     <div class="brand">
       <div class="avatar">F</div>
-      <div class="kicker">4 / 4 · Key</div>
+      <div class="kicker">4 / 4 · Ready</div>
       ${glitch('Access Granted')}
+      <p class="sub">Copy the script, then copy your key.</p>
     </div>
     <div class="key-stage">
-      <div class="big-key" id="keyVal">${ACCESS_KEY}</div>
-      <button class="btn btn-green" id="copyBtn">Copy Key</button>
+      <button class="btn btn-primary" id="copyScript">Copy script</button>
+      <button class="btn btn-green" id="copyKey">Copy key</button>
     </div>`;
-  card.querySelector('#copyBtn').onclick = async ()=>{
-    try{ await navigator.clipboard.writeText(ACCESS_KEY); }
-    catch{ const ta=document.createElement('textarea'); ta.value=ACCESS_KEY; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
-    toast('Copied to clipboard!');
-  };
+  card.querySelector('#copyScript').onclick=function(){copyValue(SCRIPT_LINE,this);};
+  card.querySelector('#copyKey').onclick=function(){copyValue(readAccess(),this);};
 }
 
-/* ============================ СТАРТ ============================ */
+
 stageCaptcha();
 </script>
+<script data-goatcounter="https://funstatov.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
