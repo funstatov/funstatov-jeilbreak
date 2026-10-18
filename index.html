@@ -236,6 +236,8 @@
     .offer{flex-wrap:wrap} .offer .otxt{flex-basis:100%; order:3;} .offer .ogo{order:4; width:100%; margin-top:4px;} }
   @media (prefers-reduced-motion:reduce){ *{animation:none!important} }
 .btn:focus-visible,.opt:focus-visible{outline:2px solid var(--cyan);outline-offset:4px}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:none;transform:none}
+#captchaInput:focus{outline:2px solid var(--cyan);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -280,40 +282,80 @@ let offerState = { yt:false, dc:false };
 
 
 function stageCaptcha(){
-  card.innerHTML = `
+  card.innerHTML=`
     <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
-    <div class="brand">
-      <div class="avatar">F</div>
-      <div class="kicker">1 / 4 · Captcha</div>
-      ${glitch('Human Verification')}
-      <p class="sub">Confirm you are not a robot to continue.</p>
-    </div>
-    <div class="panel">
-      <div class="cap-widget">
-        <div class="cap-box" id="capBox"><span class="tick">&#10003;</span></div>
-        <div class="cap-label">I'm not a robot</div>
-        <div class="cap-brand"><div class="shield">FS</div><span>Privacy</span><span>Terms</span></div>
-      </div>
-      <div class="cap-note" id="capNote"></div>
-    </div>`;
-  const box = card.querySelector('#capBox');
-  const note = card.querySelector('#capNote');
-  let busy = false;
-  box.addEventListener('click', ()=>{
-    if(busy || box.classList.contains('checked')) return;
-    busy = true;
-    box.classList.add('spin');
-    note.textContent = 'Verifying...';
-    setTimeout(()=>{
-      box.classList.remove('spin');
-      box.classList.add('checked');
-      note.textContent = 'Verified ✓';
-      note.style.color = 'var(--neon)';
-      setTimeout(stagePlan, 600);
-    }, 1200);
+    <div class="brand"><div class="avatar">F</div><div class="kicker">1 / 4 · Captcha</div>
+    ${glitch('Human Verification')}<p class="sub">Enter the 6 characters shown below.</p></div>
+    <form class="panel" id="captchaForm">
+      <canvas id="captchaImage" width="720" height="240" role="img" aria-label="Six-character visual challenge. Use New image if difficult to read." style="width:100%;height:auto;display:block;border:1px solid var(--neon-dim)"></canvas>
+      <button type="button" class="btn" id="captchaRefresh" style="color:var(--neon);margin:8px 0">New image ↻</button>
+      <label for="captchaInput" style="font-family:var(--f-mono)">Characters (not case-sensitive)</label>
+      <input id="captchaInput" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="6" required minlength="6" aria-describedby="capNote" style="box-sizing:border-box;width:100%;margin:10px 0 16px;padding:14px;background:var(--dark);border:1px solid var(--neon);color:var(--txt);font:24px var(--f-mono);letter-spacing:7px;text-align:center;border-radius:0">
+      <button type="submit" class="btn btn-primary" id="captchaSubmit">Verify</button>
+      <div class="cap-note" id="capNote" role="status" aria-live="polite"></div>
+    </form>`;
+  const input=card.querySelector('#captchaInput'),note=card.querySelector('#capNote');
+  const submit=card.querySelector('#captchaSubmit'),refresh=card.querySelector('#captchaRefresh');
+  const canvas=card.querySelector('#captchaImage'),ctx=canvas.getContext('2d');
+  const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let answer='',issued=0,failures=0,lockedUntil=0,finished=false;
+  try{
+    const saved=JSON.parse(sessionStorage.getItem('fs-captcha')||'{}');
+    failures=Math.max(0,Number(saved.failures)||0);
+    lockedUntil=Math.min(Date.now()+30000,Number(saved.lockedUntil)||0);
+  }catch{}
+  function save(){try{sessionStorage.setItem('fs-captcha',JSON.stringify({failures,lockedUntil}));}catch{}}
+  function random(n){
+    const a=new Uint32Array(1),limit=4294967296-(4294967296%n);
+    do{crypto.getRandomValues(a);}while(a[0]>=limit);
+    return a[0]%n;
+  }
+  function draw(){
+    answer=Array.from({length:6},()=>alphabet[random(alphabet.length)]).join('');
+    issued=Date.now();input.value='';
+    ctx.fillStyle='#03120a';ctx.fillRect(0,0,720,240);
+    for(let i=0;i<250;i++){
+      ctx.fillStyle=i%2?'#155e39':'#22615b';
+      ctx.beginPath();ctx.arc(random(720),random(240),1+random(3),0,Math.PI*2);ctx.fill();
+    }
+    for(let i=0;i<5;i++){
+      ctx.strokeStyle=i%2?'#24634b':'#18535b';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(0,random(240));ctx.bezierCurveTo(180,random(240),540,random(240),720,random(240));ctx.stroke();
+    }
+    for(let i=0;i<6;i++){
+      ctx.save();ctx.translate(72+i*114,128+random(25)-12);ctx.rotate((random(21)-10)*Math.PI/180);
+      ctx.font='bold 84px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillStyle=i%2?'#a6ffbe':'#55eedb';ctx.fillText(answer[i],0,0);ctx.restore();
+    }
+  }
+  function tick(){
+    if(finished||!canvas.isConnected){clearInterval(timer);return;}
+    const remaining=Math.max(0,Math.ceil((lockedUntil-Date.now())/1000));
+    submit.disabled=refresh.disabled=input.disabled=remaining>0;
+    if(remaining){note.textContent='Too many attempts. Try again in '+remaining+'s.';}
+    else if(lockedUntil){lockedUntil=0;failures=0;save();draw();note.textContent='Enter the new characters.';}
+  }
+  const timer=setInterval(tick,250);
+  refresh.onclick=()=>{
+    if(finished||Date.now()<lockedUntil)return;
+    draw();note.textContent='New image ready.';input.focus();
+  };
+  card.querySelector('#captchaForm').addEventListener('submit',e=>{
+    e.preventDefault();if(finished||Date.now()<lockedUntil)return;
+    const value=input.value.trim().toUpperCase();
+    if(value.length!==6){note.textContent='Enter all 6 characters.';return;}
+    if(Date.now()-issued>120000){draw();note.textContent='Image expired. Enter the new characters.';return;}
+    if(value===answer){
+      finished=true;clearInterval(timer);failures=0;lockedUntil=0;save();answer='';
+      submit.disabled=refresh.disabled=input.disabled=true;note.textContent='Verified ✓';
+      setTimeout(stagePlan,500);return;
+    }
+    failures++;draw();note.textContent='Incorrect characters. Try the new image.';
+    if(failures>=5)lockedUntil=Date.now()+30000;
+    save();tick();input.focus();
   });
+  draw();tick();
 }
-
 
 function stagePlan(){
   card.innerHTML = `
