@@ -13,7 +13,7 @@
     --bg-0:#03080a; --bg-2:#02120a;
     --neon:#00ff41; --neon-2:#39ff14; --neon-soft:#7cff9b;
     --neon-dim:rgba(0,255,65,.18); --neon-line:rgba(0,255,65,.07);
-    --cyan:#00e5ff; --magenta:#ff2bd6; --red:#ff0033; --discord:#5865F2;
+    --cyan:#00e5ff; --magenta:#ff2bd6; --red:#ff0033;
     --txt:#c9ffd6; --muted:#5fae74; --dark:#020a05;
     --panel-2:rgba(2,12,6,.92);
     --f-hud:'Orbitron',sans-serif;
@@ -176,7 +176,6 @@
   .offer .oicon{width:48px; height:48px; flex:0 0 auto; display:grid; place-items:center; color:#fff;
     background:linear-gradient(135deg,#ff0033,#b3001f); filter:drop-shadow(0 0 8px rgba(255,0,51,.55));
     clip-path:polygon(20% 0,80% 0,100% 50%,80% 100%,20% 100%,0 50%);}
-  .offer.dc .oicon{background:linear-gradient(135deg,var(--discord),#3a45c4); filter:drop-shadow(0 0 8px rgba(88,101,242,.55));}
   .offer .oicon svg{width:26px; height:26px; fill:currentColor;}
   .offer .otxt{flex:1; min-width:0;}
   .offer .otxt b{display:block; font-family:var(--f-hud); font-size:13px; color:#eafff0; letter-spacing:.5px;}
@@ -280,13 +279,11 @@
 <script>
 
 const YT_LINK      = 'https://www.youtube.com/@funstatov';
-const DISCORD_LINK = 'https://discord.com/invite/admHaUyA3c?utm_source=disboard&utm_medium=external_directory&utm_campaign=organic_discovery';
 const payload = [40, 109, 58, 17, 191, 196, 221, 249, 154, 154, 199, 82, 123, 16, 99, 56];
 const readAccess = () => payload.map((n,i)=>String.fromCharCode(n ^ ((73+i*17)%256))).join('');
 const SCRIPT_LINE = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/funstatov/funstatov-jeilbreak-000/refs/heads/main/jeilbreak.lua"))()';
 
 const YT_SVG = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.5v-7l6.3 3.5z"/></svg>';
-const DISCORD_SVG = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M20.317 4.369a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>';
 
 const card = document.getElementById('card');
 let toastTimer;
@@ -297,7 +294,7 @@ function toast(msg){
 }
 function glitch(txt){ return `<h1 class="glitch" data-text="${txt.replace(/"/g,'&quot;')}">${txt}</h1>`; }
 
-let offerState = { yt:false, dc:false, like:false };
+let offerState = { yt:false, like:false };
 
 
 function stageCaptcha(){
@@ -393,7 +390,7 @@ function stagePlan(){
         <span class="chev">›</span>
       </button>
     </div>`;
-  card.querySelector('#goFree').onclick = ()=>{ offerState={yt:false,dc:false,like:false}; stageAds(); };
+  card.querySelector('#goFree').onclick = ()=>{ offerState={yt:false,like:false}; stageAds(); };
 }
 
 
@@ -428,11 +425,6 @@ function stageAds(){
       <div class="otxt"><b>Subscribe on YouTube</b><span>Visit for at least 5 seconds, then return</span></div>
       <span class="ogo" id="ytGo">Subscribe</span>
     </div>
-    <div class="offer dc" id="dcOffer">
-      <div class="oicon">${DISCORD_SVG}</div>
-      <div class="otxt"><b>Join Discord Server</b><span>Visit for at least 5 seconds, then return</span></div>
-      <span class="ogo" id="dcGo">Join</span>
-    </div>
     <div class="offer" id="likeOffer">
       <div class="oicon">${YT_SVG}</div>
       <div class="otxt"><b>Like the video</b><span>Visit for at least 5 seconds, then return</span></div>
@@ -446,12 +438,12 @@ function stageAds(){
 
   const pct=card.querySelector('#pct'), bar=card.querySelector('#barFill'), steps=card.querySelector('#steps');
   const render=()=>{
-    const done=(offerState.yt?1:0)+(offerState.dc?1:0)+(offerState.like?1:0);
+    const done=(offerState.yt?1:0)+(offerState.like?1:0);
     steps.innerHTML=stepRow(done);
-    const p=Math.round(done/3*100);
+    const p=Math.round(done/2*100);
     pct.textContent=p+'%';
     bar.style.width=p+'%';
-    if(done>=3){ setTimeout(stageKey, 600); }
+    if(done>=2){ setTimeout(stageKey, 600); }
   };
   render();
 
@@ -460,7 +452,7 @@ function stageAds(){
   let expiry=null;
   function clearPending(){
     if(pending){
-      card.querySelector('#'+pending+'Go').textContent=({yt:'Subscribe',dc:'Join',like:'Like'})[pending];
+      card.querySelector('#'+pending+'Go').textContent=({yt:'Subscribe',like:'Like'})[pending];
     }
     pending=null;hiddenAt=null;clearTimeout(expiry);
   }
@@ -482,7 +474,7 @@ function stageAds(){
     card.querySelector('#'+id+'Offer').classList.add('done');
     card.querySelector('#'+id+'Go').textContent='Completed ✓';
     render();
-    if(offerState.yt && offerState.dc && offerState.like){
+    if(offerState.yt && offerState.like){
       document.removeEventListener('visibilitychange',visibilityChanged);
     }
   }
@@ -501,7 +493,6 @@ function stageAds(){
     },15000);
   }
   card.querySelector('#ytOffer').addEventListener('click',()=>visit('yt',YT_LINK));
-  card.querySelector('#dcOffer').addEventListener('click',()=>visit('dc',DISCORD_LINK));
   card.querySelector('#likeOffer').addEventListener('click',()=>visit('like','https://youtu.be/rdl118eiA-4?si=UuX3inVG2NRlIfys'));
 }
 
