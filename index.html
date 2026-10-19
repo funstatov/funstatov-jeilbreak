@@ -21,10 +21,11 @@
     --f-body:'Rajdhani',system-ui,Segoe UI,Arial,sans-serif;
   }
   *{box-sizing:border-box}
-  html,body{height:100%}
+  html{min-height:100%;overflow-y:auto}
+  body{height:auto}
   body{
     margin:0; font-family:var(--f-body); color:var(--txt); background:var(--bg-0);
-    min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center;
     overflow-x:hidden; position:relative; padding:60px 16px 76px;
     text-shadow:0 0 1px rgba(0,255,65,.25);
   }
@@ -58,7 +59,7 @@
   .hud-frame .bl{bottom:0;left:0;border-right:0;border-top:0}
   .hud-frame .br{bottom:0;right:0;border-left:0;border-top:0}
 
-  .card{position:relative; z-index:20; width:min(470px,100%);
+  .card{flex-shrink:0;position:relative; z-index:20; width:min(470px,100%);
     background:linear-gradient(180deg, rgba(0,40,18,.35), var(--panel-2));
     border:1px solid var(--neon-dim); padding:30px 26px 24px;
     box-shadow:0 0 0 1px rgba(0,255,65,.06) inset, 0 0 40px rgba(0,255,65,.12), 0 30px 80px rgba(0,0,0,.7);
@@ -238,6 +239,24 @@
 .btn:focus-visible,.opt:focus-visible{outline:2px solid var(--cyan);outline-offset:4px}
 .btn:disabled{opacity:.45;cursor:not-allowed;filter:none;transform:none}
 #captchaInput:focus{outline:2px solid var(--cyan);outline-offset:2px}
+
+  @media (max-width:600px), (max-height:600px){
+    body{justify-content:flex-start;padding:24px 14px max(24px,env(safe-area-inset-bottom));}
+    .card{width:min(470px,100%);padding:24px 16px;min-height:0;}
+    .footer{position:relative;inset:auto;flex-shrink:0;width:100%;margin-top:22px;padding:0 8px;line-height:1.7;overflow-wrap:anywhere;}
+    .toast{max-width:calc(100vw - 32px);width:max-content;text-align:center;top:max(16px,env(safe-area-inset-top));}
+    .steps{gap:4px;}
+    .step{min-width:0;font-size:clamp(8px,2.4vw,11px);letter-spacing:0;gap:4px;padding:11px 3px;}
+    .step .ic{flex-shrink:0;width:13px;height:13px;font-size:9px;}
+    .arrow{font-size:10px;}
+    .offer{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;padding:12px;}
+    .offer .oicon{width:40px;height:40px;}
+    .offer .otxt{order:initial;min-width:0;}
+    .offer .otxt b{font-size:12px;}
+    .offer .otxt span{line-height:1.5;}
+    .offer .ogo{grid-column:1/-1;order:initial;width:100%;margin:2px 0 0;text-align:center;min-height:44px;display:grid;place-items:center;}
+    .note{align-items:flex-start;line-height:1.5;}
+  }
 </style>
 </head>
 <body>
