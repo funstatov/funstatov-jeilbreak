@@ -279,7 +279,7 @@
 <script>
 
 const YT_LINK      = 'https://www.youtube.com/@funstatov';
-const payload = [40, 109, 58, 17, 191, 196, 221, 249, 154, 154, 199, 82, 123, 16, 99, 56];
+const payload = [2, 109, 6, 45, 191, 232, 253, 249, 169, 174, 199, 116];
 const readAccess = () => payload.map((n,i)=>String.fromCharCode(n ^ ((73+i*17)%256))).join('');
 const SCRIPT_LINE = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/funstatov/funstatov-jeilbreak-000/refs/heads/main/jeilbreak.lua"))()';
 
@@ -294,7 +294,17 @@ function toast(msg){
 }
 function glitch(txt){ return `<h1 class="glitch" data-text="${txt.replace(/"/g,'&quot;')}">${txt}</h1>`; }
 
-let offerState = { yt:false, like:false };
+const progressKey='fs-link-progress-v2';
+let offerState={yt:false,like:false};
+let linkStarted={};
+try{
+  const saved=JSON.parse(sessionStorage.getItem(progressKey)||'{}');
+  offerState={yt:saved.yt===true,like:saved.like===true};
+  linkStarted=saved.started||{};
+}catch{}
+function saveLinks(){
+  try{sessionStorage.setItem(progressKey,JSON.stringify({...offerState,started:linkStarted}));}catch{}
+}
 
 
 function stageCaptcha(){
@@ -390,7 +400,7 @@ function stagePlan(){
         <span class="chev">›</span>
       </button>
     </div>`;
-  card.querySelector('#goFree').onclick = ()=>{ offerState={yt:false,like:false}; stageAds(); };
+  card.querySelector('#goFree').onclick = ()=>{ stageAds(); };
 }
 
 
@@ -422,19 +432,19 @@ function stageAds(){
     </div>
     <div class="offer" id="ytOffer">
       <div class="oicon">${YT_SVG}</div>
-      <div class="otxt"><b>Subscribe on YouTube</b><span>Visit for at least 5 seconds, then return</span></div>
+      <div class="otxt"><b>Subscribe on YouTube</b><span>Open the link, wait 5 seconds, then click Continue</span></div>
       <span class="ogo" id="ytGo">Subscribe</span>
     </div>
     <div class="offer" id="likeOffer">
       <div class="oicon">${YT_SVG}</div>
-      <div class="otxt"><b>Like the video</b><span>Visit for at least 5 seconds, then return</span></div>
+      <div class="otxt"><b>Like the video</b><span>Open the link, wait 5 seconds, then click Continue</span></div>
       <span class="ogo" id="likeGo">Like</span>
     </div>
     <div class="ad-slot" id="adSlot">
       <div class="as-text">[ here could be your ad ]</div>
       <div class="as-sub">inactive ad space</div>
     </div>
-    <div class="note"><span class="q">!</span><span>Open each link, switch to its tab for 5 seconds, then return here.</span></div>`;
+    <div class="note"><span class="q">!</span><span>Open each link, then click Continue when its timer ends.</span></div>`;
 
   const pct=card.querySelector('#pct'), bar=card.querySelector('#barFill'), steps=card.querySelector('#steps');
   const render=()=>{
@@ -447,53 +457,50 @@ function stageAds(){
   };
   render();
 
-  let pending=null;
-  let hiddenAt=null;
-  let expiry=null;
-  function clearPending(){
-    if(pending){
-      card.querySelector('#'+pending+'Go').textContent=({yt:'Subscribe',like:'Like'})[pending];
+  const links={yt:YT_LINK,like:'https://youtu.be/rdl118eiA-4?si=UuX3inVG2NRlIfys'};
+  const timers=[];
+  let advancing=false;
+  function update(id){
+    const row=card.querySelector('#'+id+'Offer');
+    if(!row)return;
+    const button=card.querySelector('#'+id+'Go');
+    if(offerState[id]){
+      row.classList.add('done');button.textContent='Completed ✓';return;
     }
-    pending=null;hiddenAt=null;clearTimeout(expiry);
+    const started=Number(linkStarted[id]);
+    const remaining=started?Math.max(0,Math.ceil((started+5000-Date.now())/1000)):null;
+    button.textContent=remaining===null?({yt:'Subscribe',like:'Like'})[id]:remaining>0?'Wait '+remaining+'s':'Continue';
   }
-  function visibilityChanged(){
-    if(!pending) return;
-    if(document.hidden){
-      hiddenAt=performance.now();
-      return;
+  for(const id of ['yt','like']){
+    const row=card.querySelector('#'+id+'Offer');
+    row.setAttribute('role','button');row.tabIndex=0;
+    const fallback=document.createElement('a');
+    fallback.href=links[id];fallback.target='_blank';fallback.rel='noopener noreferrer';
+    fallback.textContent='Open link';fallback.style.cssText='display:inline-block;color:var(--cyan);margin:4px 0 12px;font-size:13px';
+    row.after(fallback);
+    function begin(){
+      if(!linkStarted[id]){linkStarted[id]=Date.now();saveLinks();}
+      update(id);
     }
-    if(hiddenAt===null) return;
-    const elapsed=performance.now()-hiddenAt;
-    const id=pending;
-    clearPending();
-    if(elapsed<5000){
-      toast('Too short. Open the link again and wait 5 seconds.');
-      return;
-    }
-    offerState[id]=true;
-    card.querySelector('#'+id+'Offer').classList.add('done');
-    card.querySelector('#'+id+'Go').textContent='Completed ✓';
-    render();
-    if(offerState.yt && offerState.like){
-      document.removeEventListener('visibilitychange',visibilityChanged);
-    }
-  }
-  document.addEventListener('visibilitychange',visibilityChanged);
-  function visit(id,url){
-    if(offerState[id]) return;
-    if(pending){toast('Finish the current link first.');return;}
-    pending=id;hiddenAt=null;
-    card.querySelector('#'+id+'Go').textContent='Waiting…';
-    window.open(url,'_blank','noopener,noreferrer');
-    toast('Switch to the opened tab for 5 seconds, then return.');
-    expiry=setTimeout(()=>{
-      if(pending && hiddenAt===null){
-        clearPending();toast('No tab switch detected. Allow pop-ups and try again.');
+    fallback.addEventListener('click',begin);
+    function activate(){
+      if(offerState[id]||advancing)return;
+      if(!linkStarted[id]){
+        begin();window.open(links[id],'_blank','noopener,noreferrer');return;
       }
-    },15000);
+      if(Date.now()-Number(linkStarted[id])<5000){update(id);return;}
+      offerState[id]=true;saveLinks();update(id);render();
+      if(offerState.yt&&offerState.like){advancing=true;timers.forEach(clearInterval);}
+    }
+    row.addEventListener('click',activate);
+    row.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate();}});
+    update(id);
+    timers.push(setInterval(()=>{
+      if(!row.isConnected){timers.forEach(clearInterval);return;}
+      update(id);
+    },250));
   }
-  card.querySelector('#ytOffer').addEventListener('click',()=>visit('yt',YT_LINK));
-  card.querySelector('#likeOffer').addEventListener('click',()=>visit('like','https://youtu.be/rdl118eiA-4?si=UuX3inVG2NRlIfys'));
+
 }
 
 
