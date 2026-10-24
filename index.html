@@ -256,6 +256,29 @@
     .offer .ogo{grid-column:1/-1;order:initial;width:100%;margin:2px 0 0;text-align:center;min-height:44px;display:grid;place-items:center;}
     .note{align-items:flex-start;line-height:1.5;}
   }
+
+.card.download-page{width:min(1280px,100%);padding:0;background:none;border:0;box-shadow:none;backdrop-filter:none;overflow:visible;animation:none}
+.download-header{text-align:center;margin:0 0 70px;font-family:Arial,sans-serif}
+.download-header h1{font-size:clamp(30px,4.1vw,58px);line-height:1.12;letter-spacing:-1.5px;margin:0 0 20px;color:var(--txt);font-weight:800}
+.download-header p{font-size:20px;color:#c8d8cc;margin:0}
+.download-line{width:290px;max-width:70%;height:2px;background:var(--neon);box-shadow:0 0 14px var(--neon);margin:48px auto 0}
+.download-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:34px;align-items:center;padding:12px 4px 24px;perspective:1200px}
+.download-option{color:var(--txt);text-decoration:none;min-height:470px;border:1px solid rgba(0,255,65,.16);border-radius:18px;background:rgba(1,12,7,.91);display:flex;flex-direction:column;align-items:center;text-align:center;padding:46px 20px 42px;font-family:Arial,sans-serif;transition:transform .23s ease,border-color .23s ease,box-shadow .23s ease;position:relative}
+.download-option.recommended{transform:translateY(-24px);border-color:rgba(0,255,65,.5)}
+.download-option:hover,.download-option:focus-visible{transform:translateY(-12px) scale(1.035);border-color:var(--neon);box-shadow:0 0 28px rgba(0,255,65,.3),0 24px 48px rgba(0,0,0,.45);outline:none;z-index:2}
+.download-option.recommended:hover,.download-option.recommended:focus-visible{transform:translateY(-36px) scale(1.035)}
+.provider-icon{width:96px;height:96px;display:grid;place-items:center;color:var(--neon);font-size:88px;font-weight:900;line-height:1;text-shadow:0 0 20px rgba(0,255,65,.3)}
+.icon-0{font-size:100px;transform:rotate(-10deg)}
+.icon-1{color:var(--neon)}
+.icon-2{border-radius:50%;background:var(--neon);color:#041409;font-size:74px;font-weight:900}
+.recommend-label{height:75px;display:flex;align-items:flex-end;justify-content:center;font-size:15px;padding-bottom:0}
+.download-option p{font-size:15px;line-height:1.5;color:#adb9ad;margin:24px 0 18px}
+.download-option ul{list-style:none;margin:0;padding:0;color:#a9b8ad;font-size:13px;line-height:2.15}
+.download-option li span{font-size:20px;margin-right:8px}
+.download-action{display:flex;gap:9px;align-items:center;font-size:15px;font-weight:700;margin-top:auto;padding-top:30px}
+.download-action svg{width:16px;height:16px}
+@media(max-width:760px){.download-grid{grid-template-columns:1fr;gap:20px;max-width:440px;margin:auto}.download-header{margin-bottom:30px}.download-header h1{letter-spacing:-.6px}.download-header p{font-size:16px}.download-line{margin-top:28px}.download-option{min-height:390px;padding:28px 18px}.download-option.recommended{transform:none}.download-option.recommended:hover,.download-option.recommended:focus-visible,.download-option:hover{transform:translateY(-5px) scale(1.015)}.recommend-label{height:42px}}
+@media(prefers-reduced-motion:reduce){.download-option{transition:none}.download-option:hover,.download-option.recommended:hover{transform:none}}
 </style>
 </head>
 <body>
@@ -277,40 +300,12 @@
   <div class="toast" id="toast"></div>
 
 <script>
-
-const YT_LINK      = 'https://www.youtube.com/@funstatov';
-const payload = [2, 109, 6, 45, 191, 232, 253, 249, 169, 174, 199, 116];
-const readAccess = () => payload.map((n,i)=>String.fromCharCode(n ^ ((73+i*17)%256))).join('');
-const SCRIPT_LINE = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/funstatov/funstatov-jeilbreak-000/refs/heads/main/jeilbreak.lua"))()';
-
-const YT_SVG = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.5 15.5v-7l6.3 3.5z"/></svg>';
-
-const card = document.getElementById('card');
-let toastTimer;
-function toast(msg){
-  const el=document.getElementById('toast');
-  el.textContent=msg; el.classList.add('show'); clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.classList.remove('show'),2200);
-}
-function glitch(txt){ return `<h1 class="glitch" data-text="${txt.replace(/"/g,'&quot;')}">${txt}</h1>`; }
-
-const progressKey='fs-link-progress-v2';
-let offerState={yt:false,like:false};
-let linkStarted={};
-try{
-  const saved=JSON.parse(sessionStorage.getItem(progressKey)||'{}');
-  offerState={yt:saved.yt===true,like:saved.like===true};
-  linkStarted=saved.started||{};
-}catch{}
-function saveLinks(){
-  try{sessionStorage.setItem(progressKey,JSON.stringify({...offerState,started:linkStarted}));}catch{}
-}
-
-
+const card=document.getElementById('card');
+function glitch(txt){return `<h1 class="glitch" data-text="${txt}">${txt}</h1>`;}
 function stageCaptcha(){
   card.innerHTML=`
     <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
-    <div class="brand"><div class="avatar">F</div><div class="kicker">1 / 4 · Captcha</div>
+    <div class="brand"><div class="avatar">F</div><div class="kicker">1 / 2 · Captcha</div>
     ${glitch('Human Verification')}<p class="sub">Enter the 6 characters shown below.</p></div>
     <form class="panel" id="captchaForm">
       <canvas id="captchaImage" width="720" height="240" role="img" aria-label="Six-character visual challenge. Use New image if difficult to read." style="width:100%;height:auto;display:block;border:1px solid var(--neon-dim)"></canvas>
@@ -374,7 +369,7 @@ function stageCaptcha(){
     if(value===answer){
       finished=true;clearInterval(timer);failures=0;lockedUntil=0;save();answer='';
       submit.disabled=refresh.disabled=input.disabled=true;note.textContent='Verified ✓';
-      setTimeout(stagePlan,500);return;
+      setTimeout(stageDownloads,500);return;
     }
     failures++;draw();note.textContent='Incorrect characters. Try the new image.';
     if(failures>=5)lockedUntil=Date.now()+30000;
@@ -383,164 +378,17 @@ function stageCaptcha(){
   draw();tick();
 }
 
-function stagePlan(){
-  card.innerHTML = `
-    <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
-    <div class="brand">
-      <div class="avatar">F</div>
-      <div class="kicker">2 / 4 · Plan</div>
-      ${glitch('Select Access')}
-      <p class="sub">Choose how to get the script.</p>
-    </div>
-    <div class="opts">
-      <button class="opt" id="goFree">
-        <span class="opt-tag">FREE</span>
-        <span class="badge">★</span>
-        <span class="meta"><b>Free Access</b><span>Complete verification to unlock the script</span></span>
-        <span class="chev">›</span>
-      </button>
-    </div>`;
-  card.querySelector('#goFree').onclick = ()=>{ stageAds(); };
+
+function stageDownloads(){
+  card.classList.add('download-page');
+  const methods=[
+    {name:'Linkvertise',url:'https://direct-link.net/10330712/YxkeamYJW2y7',icon:'↗',description:'Quick and easy download through Linkvertise',features:['Fast Download','Secure Link','Easy Process']},
+    {name:'Lootlabs',url:'https://lootdest.org/s?JM8y2plv',icon:'<svg viewBox="0 0 100 100" width="96" height="96" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"><path d="M50 6 91 28 50 51 9 28Z M9 35v38l41 22 41-22V35 M50 52v43 M29 17l42 23 M71 17 29 40 M29 47v19l21 12 21-12V47"/></svg>' ,description:'Faster and simple download through Lootlabs',features:['Easy Download','Reliable Service','Quick Access']},
+    {name:'Work.ink',url:'https://work.ink/36Sk/ebf040ee-5031-411f-b1b6-558938eafb5d',icon:'w',description:'Fast and reliable download through Work.ink',features:['Quick Download','Reliable Service','Simple Process']}
+  ];
+  card.innerHTML=`<header class="download-header"><h1>Choose Your Download Method</h1><p>Select your preferred way to download Xeno</p><div class="download-line"></div></header><div class="download-grid">${methods.map((m,i)=>`<a class="download-option ${i===1?'recommended':''}" href="${m.url}" aria-label="Download through ${m.name}"><span class="provider-icon icon-${i}" aria-hidden="true">${m.icon}</span><div class="recommend-label">${i===1?'(Recommended)':''}</div><p>${m.description}</p><ul>${m.features.map(f=>`<li><span aria-hidden="true">→</span> ${f}</li>`).join('')}</ul><span class="download-action">Download Now <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 3h7v7M21 3 10 14M10 3H4v17h17v-6"/></svg></span></a>`).join('')}</div>`;
+  window.scrollTo(0,0);
 }
-
-
-function stepRow(done){
-  const items=[['View','◉'],['Complete','✓'],['Done','✔']];
-  return items.map((it,i)=>{
-    const cls = i<done?'step done':(i===done?'step active':'step');
-    const ic  = i<done?'✓':it[1];
-    return `<div class="${cls}"><span class="ic">${ic}</span><span>${it[0]}</span></div>` +
-           (i<items.length-1?'<span class="arrow">›</span>':'');
-  }).join('');
-}
-function stageAds(){
-  card.innerHTML = `
-    <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
-    <div class="brand">
-      <div class="avatar">F</div>
-      <div class="kicker">3 / 4 · Links</div>
-      ${glitch('Visit To Unlock')}
-    </div>
-    <div class="panel">
-      <div class="prog-head"><span>Verification</span><span class="prog-pct" id="pct">0%</span></div>
-      <div class="bar"><i id="barFill"></i></div>
-    </div>
-    <div style="height:14px"></div>
-    <div class="panel">
-      <p class="steps-title">Last step to continue</p>
-      <div class="steps" id="steps"></div>
-    </div>
-    <div class="offer" id="ytOffer">
-      <div class="oicon">${YT_SVG}</div>
-      <div class="otxt"><b>Subscribe on YouTube</b><span>Open the link, wait 5 seconds, then click Continue</span></div>
-      <span class="ogo" id="ytGo">Subscribe</span>
-    </div>
-    <div class="offer" id="likeOffer">
-      <div class="oicon">${YT_SVG}</div>
-      <div class="otxt"><b>Like the video</b><span>Open the link, wait 5 seconds, then click Continue</span></div>
-      <span class="ogo" id="likeGo">Like</span>
-    </div>
-    <div class="ad-slot" id="adSlot">
-      <div class="as-text">[ here could be your ad ]</div>
-      <div class="as-sub">inactive ad space</div>
-    </div>
-    <div class="note"><span class="q">!</span><span>Open each link, then click Continue when its timer ends.</span></div>`;
-
-  const pct=card.querySelector('#pct'), bar=card.querySelector('#barFill'), steps=card.querySelector('#steps');
-  const render=()=>{
-    const done=(offerState.yt?1:0)+(offerState.like?1:0);
-    steps.innerHTML=stepRow(done);
-    const p=Math.round(done/2*100);
-    pct.textContent=p+'%';
-    bar.style.width=p+'%';
-    if(done>=2){ setTimeout(stageKey, 600); }
-  };
-  render();
-
-  const links={yt:YT_LINK,like:'https://youtu.be/rdl118eiA-4?si=UuX3inVG2NRlIfys'};
-  const timers=[];
-  let advancing=false;
-  function update(id){
-    const row=card.querySelector('#'+id+'Offer');
-    if(!row)return;
-    const button=card.querySelector('#'+id+'Go');
-    if(offerState[id]){
-      row.classList.add('done');button.textContent='Completed ✓';return;
-    }
-    const started=Number(linkStarted[id]);
-    const remaining=started?Math.max(0,Math.ceil((started+5000-Date.now())/1000)):null;
-    button.textContent=remaining===null?({yt:'Subscribe',like:'Like'})[id]:remaining>0?'Wait '+remaining+'s':'Continue';
-  }
-  for(const id of ['yt','like']){
-    const row=card.querySelector('#'+id+'Offer');
-    row.setAttribute('role','button');row.tabIndex=0;
-    const fallback=document.createElement('a');
-    fallback.href=links[id];fallback.target='_blank';fallback.rel='noopener noreferrer';
-    fallback.textContent='Open link';fallback.style.cssText='display:inline-block;color:var(--cyan);margin:4px 0 12px;font-size:13px';
-    row.after(fallback);
-    function begin(){
-      if(!linkStarted[id]){linkStarted[id]=Date.now();saveLinks();}
-      update(id);
-    }
-    fallback.addEventListener('click',begin);
-    function activate(){
-      if(offerState[id]||advancing)return;
-      if(!linkStarted[id]){
-        begin();window.open(links[id],'_blank','noopener,noreferrer');return;
-      }
-      if(Date.now()-Number(linkStarted[id])<5000){update(id);return;}
-      offerState[id]=true;saveLinks();update(id);render();
-      if(offerState.yt&&offerState.like){advancing=true;timers.forEach(clearInterval);}
-    }
-    row.addEventListener('click',activate);
-    row.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate();}});
-    update(id);
-    timers.push(setInterval(()=>{
-      if(!row.isConnected){timers.forEach(clearInterval);return;}
-      update(id);
-    },250));
-  }
-
-}
-
-
-async function copyValue(value,button){
-  const original=button.textContent;
-  let copied=false;
-  try{
-    await navigator.clipboard.writeText(value);
-    copied=true;
-  }catch{
-    const ta=document.createElement('textarea');
-    ta.value=value;ta.readOnly=true;
-    ta.style.cssText='position:fixed;left:-9999px;top:0';
-    document.body.appendChild(ta);ta.select();
-    try{copied=document.execCommand('copy');}catch{}
-    ta.remove();
-  }
-  if(!copied){toast('Copy failed. Check your browser permissions.');return;}
-  button.textContent='Link copied!';
-  toast('Link copied!');
-  setTimeout(()=>{button.textContent=original;},2200);
-}
-function stageKey(){
-  card.innerHTML = `
-    <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
-    <div class="brand">
-      <div class="avatar">F</div>
-      <div class="kicker">4 / 4 · Ready</div>
-      ${glitch('Access Granted')}
-      <p class="sub">Copy the script, then copy your key.</p>
-    </div>
-    <div class="key-stage">
-      <button class="btn btn-primary" id="copyScript">Copy script</button>
-      <button class="btn btn-green" id="copyKey">Copy key</button>
-    </div>`;
-  card.querySelector('#copyScript').onclick=function(){copyValue(SCRIPT_LINE,this);};
-  card.querySelector('#copyKey').onclick=function(){copyValue(readAccess(),this);};
-}
-
-
 stageCaptcha();
 </script>
 <script data-goatcounter="https://funstatov.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
